@@ -82,7 +82,8 @@ class ReportAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'group':
-            kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
+            #kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
+            pass
         return super(ReportAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(School)
