@@ -23,7 +23,7 @@ class SectionAdmin(admin.ModelAdmin):
 class LearningTargetAdmin(admin.ModelAdmin):
     list_display = ('code', 'description')
 
-class GroupStudentInline(admin.TabularInline):
+class GroupStudentInline(admin.StackedInline):
     model = GroupStudent
     extra = 1
 
@@ -31,7 +31,10 @@ class GroupAdmin(admin.ModelAdmin):
     inlines = [GroupStudentInline]
     list_display = ('code', 'section', 'instructor')
 
-class ReportStudentInline(admin.TabularInline):
+class PlanAdmin(admin.ModelAdmin):
+    list_display = ('course', 'instructor', 'description')
+
+class ReportStudentInline(admin.StackedInline):
     model = ReportStudent
     extra = 3
 
@@ -96,5 +99,6 @@ admin.site.register(Standard)
 admin.site.register(LearningTarget, LearningTargetAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(GroupStudent)
+admin.site.register(Plan, PlanAdmin)
 admin.site.register(Report, ReportAdmin)
 admin.site.register(ReportStudent)

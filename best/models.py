@@ -122,15 +122,24 @@ class GroupStudent(models.Model):
     date_left = models.DateField('Date Left', null=True)
 
 
-class Report(models.Model):
-    group = models.ForeignKey(Group)
-    date = models.DateField()
-    week = models.IntegerField()
+class Plan(models.Model):
+    course = models.ForeignKey(Course)
+    instructor = models.ForeignKey(Instructor)
+    description = models.CharField(max_length=256)
     learning_target = models.ForeignKey(LearningTarget)
     dosage = models.IntegerField()
     exit_ticket_denominator = models.IntegerField()
     homework_denominator = models.IntegerField()
     quiz = models.BooleanField()
+
+    def __str__(self):
+        return self.description
+
+class Report(models.Model):
+    group = models.ForeignKey(Group)
+    date = models.DateField()
+    week = models.IntegerField()
+    plan = models.ForeignKey(Plan, null=True)
     exported = models.BooleanField()
 
 class ReportStudent(models.Model):
