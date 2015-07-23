@@ -118,8 +118,8 @@ class Group(models.Model):
 class GroupStudent(models.Model):
     group = models.ForeignKey(Group)
     student = models.ForeignKey(Student)
-    date_entered = models.DateField('Date Entered')
-    date_left = models.DateField('Date Left', null=True)
+    date_entered = models.DateField('Date Entered', null=True, blank=True)
+    date_left = models.DateField('Date Left', null=True, blank=True)
 
 
 class Plan(models.Model):
@@ -130,7 +130,6 @@ class Plan(models.Model):
     dosage = models.IntegerField()
     exit_ticket_denominator = models.IntegerField()
     homework_denominator = models.IntegerField()
-    quiz = models.BooleanField()
 
     def __str__(self):
         return self.description
@@ -156,9 +155,10 @@ class ReportStudent(models.Model):
     report = models.ForeignKey(Report)
     student = models.ForeignKey(Student)
     attendance = models.IntegerField(choices=ATTENDANCE_CHOICES)
-    exit_ticket = models.IntegerField(null=True)
+    exit_ticket = models.IntegerField(null=True, blank=True)
     homework_effort = models.IntegerField(choices=HOMEWORK_CHOICES)
     homework_accuracy = models.DecimalField(max_digits=3, decimal_places=1)
+    quiz = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
 
     def __str__(self):
         return "{}, {}".format(
