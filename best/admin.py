@@ -1,9 +1,12 @@
 import csv
+import logging
 
 from django.contrib import admin
 from django.http import HttpResponse
 
 from .models import *
+
+_log = logging.getLogger(__name__)
 
 class ContentAreaAdmin(admin.ModelAdmin):
     list_display = ('code', 'description')
@@ -37,6 +40,16 @@ class PlanAdmin(admin.ModelAdmin):
 class ReportStudentInline(admin.StackedInline):
     model = ReportStudent
     extra = 3
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'student' and request.user.groups.filter(name='Teachers').exists():
+            instructor_groups = request.user.instructor_set.first().group_set.all()
+            student_ids = set()
+            for group in instructor_groups:
+                for student in group.groupstudent_set.all():
+                    student_ids.add(student.id)
+            kwargs["queryset"] = Student.objects.filter(pk__in=student_ids)
+        return super(ReportStudentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class ReportAdmin(admin.ModelAdmin):
@@ -84,9 +97,14 @@ class ReportAdmin(admin.ModelAdmin):
     export_report_action.short_description = 'Export selected reports for Apricot'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'group':
-            #kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
-            pass
+        if request.user.groups.filter(name='Teachers').exists():
+            if db_field.name == 'group':
+                kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
+            if db_field.name == 'plan':
+                course_ids = set()
+                for group in request.user.instructor_set.first().group_set.all():
+                    course_ids.add(group.section.course.id)
+                kwargs["queryset"] = Plan.objects.filter(course_id__in=course_ids)
         return super(ReportAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(School)
