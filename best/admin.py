@@ -36,13 +36,19 @@ class GroupAdmin(admin.ModelAdmin):
 
 class PlanAdmin(admin.ModelAdmin):
     list_display = ('course', 'instructor', 'description')
+    
+    def get_queryset(self, request):
+        qs = super(PlanAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(instructor__user=request.user)
 
 class ReportStudentInline(admin.StackedInline):
     model = ReportStudent
     extra = 3
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'student' and request.user.groups.filter(name='Teachers').exists():
+        if db_field.name == 'student' and not request.user.is_superuser:
             instructor_groups = request.user.instructor_set.first().group_set.all()
             student_ids = set()
             for group in instructor_groups:
@@ -55,7 +61,7 @@ class ReportStudentInline(admin.StackedInline):
 class ReportAdmin(admin.ModelAdmin):
     inlines = [ReportStudentInline]
     list_display = ('group', 'date', 'week', 'exported')
-    #list_filter = ('exported',)
+    # list_filter = ('exported',)
     actions = ['export_report_action']
 
     def export_report_action(self, request, queryset):
@@ -97,7 +103,7 @@ class ReportAdmin(admin.ModelAdmin):
     export_report_action.short_description = 'Export selected reports for Apricot'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if request.user.groups.filter(name='Teachers').exists():
+        if not request.user.is_superuser:
             if db_field.name == 'group':
                 kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
             if db_field.name == 'plan':
@@ -106,6 +112,12 @@ class ReportAdmin(admin.ModelAdmin):
                     course_ids.add(group.section.course.id)
                 kwargs["queryset"] = Plan.objects.filter(course_id__in=course_ids)
         return super(ReportAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_queryset(self, request):
+        qs = super(ReportAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(group__instructor__user=request.user)
 
 admin.site.register(School)
 admin.site.register(ContentArea, ContentAreaAdmin)
@@ -119,4 +131,3 @@ admin.site.register(Group, GroupAdmin)
 admin.site.register(GroupStudent)
 admin.site.register(Plan, PlanAdmin)
 admin.site.register(Report, ReportAdmin)
-admin.site.register(ReportStudent)
