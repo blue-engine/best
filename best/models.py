@@ -77,6 +77,7 @@ class Section(models.Model):
     code = models.CharField(max_length=128)
     course = models.ForeignKey(Course)
     school = models.ForeignKey(School)
+    instructor = models.ForeignKey(Instructor, null=True)
     description = models.CharField(max_length=256)
     year_code = models.CharField(max_length=32)
     semester_code = models.CharField(max_length=32)
@@ -110,7 +111,7 @@ collection of students taught by an instructor
 class Group(models.Model):
     code = models.CharField(max_length=128)
     section = models.ForeignKey(Section)
-    instructor = models.ForeignKey(Instructor)
+    instructor = models.ForeignKey(Instructor, verbose_name='BETA')
     
     def __str__(self):
         return "{} - {}".format(self.code, self.section)
