@@ -21,4 +21,5 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url=reverse_lazy('admin:index'))),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include('best.urls')),
 ]

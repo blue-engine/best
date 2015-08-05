@@ -117,7 +117,7 @@ class Group(models.Model):
         return "{} - {}".format(self.code, self.section)
 
 class GroupStudent(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, related_name='group_students')
     student = models.ForeignKey(Student)
     date_entered = models.DateField('Date Entered', null=True, blank=True)
     date_left = models.DateField('Date Left', null=True, blank=True)

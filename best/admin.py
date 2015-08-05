@@ -63,6 +63,9 @@ class ReportAdmin(admin.ModelAdmin):
     list_display = ('group', 'date', 'week', 'exported')
     # list_filter = ('exported',)
     actions = ['export_report_action']
+    
+    class Media:
+      js = ("js/admin/report.js",)
 
     def export_report_action(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
@@ -106,11 +109,6 @@ class ReportAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
             if db_field.name == 'group':
                 kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
-            if db_field.name == 'plan':
-                course_ids = set()
-                for group in request.user.instructor_set.first().group_set.all():
-                    course_ids.add(group.section.course.id)
-                kwargs["queryset"] = Plan.objects.filter(course_id__in=course_ids)
         return super(ReportAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
@@ -128,6 +126,5 @@ admin.site.register(Section, SectionAdmin)
 admin.site.register(Standard)
 admin.site.register(LearningTarget, LearningTargetAdmin)
 admin.site.register(Group, GroupAdmin)
-admin.site.register(GroupStudent)
 admin.site.register(Plan, PlanAdmin)
 admin.site.register(Report, ReportAdmin)
