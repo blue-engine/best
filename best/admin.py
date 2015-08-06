@@ -31,6 +31,18 @@ class GroupAdmin(admin.ModelAdmin):
     inlines = [GroupStudentInline]
     list_display = ('code', 'section', 'instructor')
 
+    def get_queryset(self, request):
+        qs = super(GroupAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(instructor__user=request.user)
+        
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:
+            if db_field.name == 'instructor':
+                kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
+        return super(GroupAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 class PlanAdmin(admin.ModelAdmin):
     list_display = ('course', 'instructor', 'description')
     
