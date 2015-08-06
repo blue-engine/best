@@ -8,11 +8,8 @@ from .models import *
 
 _log = logging.getLogger(__name__)
 
-class ContentAreaAdmin(admin.ModelAdmin):
-    list_display = ('code', 'description')
-
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('code', 'description', 'content_area')
+    list_display = ('code', 'description')
 
 class InstructorAdmin(admin.ModelAdmin):
     list_display =  ('first_name', 'last_name', 'email', 'school')
@@ -118,7 +115,6 @@ class ReportAdmin(admin.ModelAdmin):
         return qs.filter(group__instructor__user=request.user)
 
 admin.site.register(School)
-admin.site.register(ContentArea, ContentAreaAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Instructor, InstructorAdmin)
 admin.site.register(Student, StudentAdmin)

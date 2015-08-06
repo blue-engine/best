@@ -14,24 +14,11 @@ class School(models.Model):
     def __str__(self):
         return "{} - {}".format(self.code, self.name)
 
-
-"""
-a way in which courses are categorized (math, literacy, etc)
-"""
-class ContentArea(models.Model):
-    code = models.CharField(max_length=128)
-    description = models.CharField(max_length=256)
-
-    def __str__(self):
-        return "{} - {}".format(self.code, self.description)
-
-
 """
 a specific topic of a particular content area that spans a time period (quarter, semester)
 """
 class Course(models.Model):
     code = models.CharField(max_length=128)
-    content_area = models.ForeignKey(ContentArea)
     description = models.CharField(max_length=256)
     
     def __str__(self):
