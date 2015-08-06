@@ -76,6 +76,13 @@ class ReportAdmin(admin.ModelAdmin):
     class Media:
       js = ("js/admin/report.js",)
 
+    def get_actions(self, request):
+        actions = super(ReportAdmin, self).get_actions(request)
+        if not request.user.has_perm('best.export_report'):
+            if 'export_report_action' in actions:
+                del actions['export_report_action']
+        return actions
+
     def export_report_action(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=reports.csv'

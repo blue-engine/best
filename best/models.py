@@ -130,6 +130,11 @@ class Report(models.Model):
     plan = models.ForeignKey(Plan, null=True)
     exported = models.BooleanField()
 
+    class Meta:
+        permissions = (
+            ('export_report', 'Export Report for Apricot'),
+        )
+
 class ReportStudent(models.Model):
     ATTENDANCE_CHOICES = (
         (0, 'Present'),
