@@ -88,6 +88,7 @@ students for them to progress academically
 class LearningTarget(models.Model):
     code = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
+    standard = models.ForeignKey(Standard, null=True, blank=True)
     
     def __str__(self):
         return "{} - {}".format(self.code, self.description)
