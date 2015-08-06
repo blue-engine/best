@@ -40,7 +40,7 @@ class GroupAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:
             if db_field.name == 'instructor':
-                kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
+                kwargs["queryset"] = Instructor.objects.filter(user=request.user)
         return super(GroupAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class PlanAdmin(admin.ModelAdmin):
