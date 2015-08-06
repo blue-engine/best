@@ -45,7 +45,7 @@ class PlanAdmin(admin.ModelAdmin):
 
 class ReportStudentInline(admin.StackedInline):
     model = ReportStudent
-    extra = 3
+    extra = 1
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'student' and not request.user.is_superuser:
