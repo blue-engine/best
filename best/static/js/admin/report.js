@@ -7,11 +7,16 @@
             group_id = $(this).val()
             if (group_id != old_group_id 
                 && (!old_group_id || confirm('Changing Groups, Will remove all form data'))) {
+
                 $student_selects = $('#reportstudent_set-group .field-student select')
-                $('#reportstudent_set-group input').val(null)
-                $('#reportstudent_set-group select').val(null)
-                $('#reportstudent_set-group .inline-deletelink').click()
+                $student_selects.val(null)
                 $student_selects.html('<option value="">---------</option>')
+                $('#reportstudent_set-group .field-attendance select').val(null)
+                $('#reportstudent_set-group .field-exit_ticket input').val(null)
+                $('#reportstudent_set-group .field-homework_effort select').val(null)
+                $('#reportstudent_set-group .field-homework_accuracy input').val(null)
+                $('#reportstudent_set-group .field-quiz input').val(null)
+                $('#reportstudent_set-group .inline-deletelink').click()
 
                 $.getJSON("/api/groups/"+group_id, function( data ) {
                     current_plan_id = $plans.val()
