@@ -74,7 +74,7 @@ class ReportStudentInline(admin.StackedInline):
 class ReportAdmin(admin.ModelAdmin):
     inlines = [ReportStudentInline]
     list_display = ('group', 'date', 'week', 'exported')
-    list_filter = ('exported', 'date')
+    exporter_list_filter = ('exported', 'date')
     actions = ['export_report_action']
     
     class Media:
@@ -86,6 +86,12 @@ class ReportAdmin(admin.ModelAdmin):
             if 'export_report_action' in actions:
                 del actions['export_report_action']
         return actions
+
+    def get_list_filter(self, request):
+        if request.user.has_perm('best.export_report'):
+            return self.exporter_list_filter
+        else:
+            return ()
 
     def export_report_action(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
@@ -135,6 +141,10 @@ class ReportAdmin(admin.ModelAdmin):
         qs = super(ReportAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
+
+        if request.user.has_perm('best.export_report'):
+            return qs.filter(group__section__school=request.school)
+
         return qs.filter(group__instructor__user=request.user)
 
 class UserAdmin(UserAdmin):
