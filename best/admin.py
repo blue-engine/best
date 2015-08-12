@@ -2,6 +2,8 @@ import csv
 import logging
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 
 from .models import *
@@ -11,8 +13,10 @@ _log = logging.getLogger(__name__)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('code', 'description')
 
-class InstructorAdmin(admin.ModelAdmin):
-    list_display =  ('first_name', 'last_name', 'email', 'school')
+class InstructorInline(admin.StackedInline):
+    model = Instructor
+    can_delete=False
+    verbose_name_plural = 'Instructor'
 
 class StudentAdmin(admin.ModelAdmin):
     list_display =  ('osis_number', 'first_name', 'last_name', 'email', 'school')
@@ -70,7 +74,7 @@ class ReportStudentInline(admin.StackedInline):
 class ReportAdmin(admin.ModelAdmin):
     inlines = [ReportStudentInline]
     list_display = ('group', 'date', 'week', 'exported')
-    # list_filter = ('exported',)
+    list_filter = ('exported', 'date')
     actions = ['export_report_action']
     
     class Media:
@@ -113,7 +117,7 @@ class ReportAdmin(admin.ModelAdmin):
                     report.plan.homework_denominator,
                     'Yes' if report_student.quiz and str(report_student.quiz) else 'No',
                     report_student.quiz,
-                    "{} {}".format(report.group.instructor.first_name, report.group.instructor.last_name),
+                    "{} {}".format(report.group.instructor.user.first_name, report.group.instructor.user.last_name),
                 ])
 
         queryset.update(exported=True)
@@ -133,9 +137,13 @@ class ReportAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(group__instructor__user=request.user)
 
+class UserAdmin(UserAdmin):
+    inlines = (InstructorInline, )
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(School)
 admin.site.register(Course, CourseAdmin)
-admin.site.register(Instructor, InstructorAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Standard)
