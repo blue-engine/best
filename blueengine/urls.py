@@ -23,3 +23,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('best.urls')),
 ]
+
+admin.site.site_header = "BEST"
+admin.site.site_title = "BEST"
