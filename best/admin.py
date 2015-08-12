@@ -71,12 +71,25 @@ class ReportStudentInline(admin.StackedInline):
             kwargs["queryset"] = Student.objects.filter(pk__in=student_ids)
         return super(ReportStudentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+class ReportCourseFilter(admin.SimpleListFilter):
+    title = 'Course'
+    parameter_name = 'course'
+
+    def lookups(self, request, model_admin):
+        courses = Course.objects.all()
+        return [(c.id, str(c)) for c in courses]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(group__section__course__id=self.value())
+        return queryset
 
 class ReportAdmin(admin.ModelAdmin):
     inlines = [ReportStudentInline]
     list_display = ('group', 'date', 'week', 'exported')
     exporter_list_filter = (
         'exported',
+        ReportCourseFilter,
         ('date', DateRangeFilter)
     )
     actions = ['export_report_action']
