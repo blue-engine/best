@@ -143,7 +143,7 @@ class ReportAdmin(admin.ModelAdmin):
             return qs
 
         if request.user.has_perm('best.export_report'):
-            return qs.filter(group__section__school=request.school)
+            return qs.filter(group__section__school=request.user.school)
 
         return qs.filter(group__instructor__user=request.user)
 
