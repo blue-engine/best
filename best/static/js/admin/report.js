@@ -26,7 +26,7 @@
                     for (var i in data.group_students){
                       if (data.group_students.hasOwnProperty(i)) {
                         student = data.group_students[i].student
-                        $student_selects.append('<option value="' + student.id + '">' + student.last_name + ', ' + student.first_name + '</option>')
+                        $student_selects.append('<option value="' + student.id + '">' + student.first_name + ' ' + student.last_name + ' (' + student.osis_number + ')</option>')
                         if (parseInt(i) + 1 == $student_selects.length){
                             $('#reportstudent_set-group .add-row a').click()
                             $student_selects = $('#reportstudent_set-group .field-student select')

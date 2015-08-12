@@ -29,15 +29,11 @@ an individual that is tasked with teaching course content to students and
 tracking the academic progress of students
 """
 class Instructor(models.Model):
-    first_name = models.CharField(max_length=128)
-    last_name = models.CharField(max_length=128)
-    email = models.CharField(max_length=128)
     school = models.ForeignKey(School)
-    user = models.ForeignKey(AUTH_USER_MODEL, null=True)
-
+    user = models.OneToOneField(AUTH_USER_MODEL, null=True)
 
     def __str__(self):
-        return "{} {}".format(self.first_name, self.last_name)
+        return "{} {}".format(self.user.first_name, self.user.last_name)
 
 
 """
@@ -51,10 +47,10 @@ class Student(models.Model):
     school = models.ForeignKey(School)
 
     def __str__(self):
-        return "{} - {} {}".format(
-            self.osis_number,
+        return "{} {} ({})".format(
             self.first_name,
-            self.last_name
+            self.last_name,
+            self.osis_number,
         )
 
 """
@@ -109,6 +105,13 @@ class GroupStudent(models.Model):
     student = models.ForeignKey(Student)
     date_entered = models.DateField('Date Entered', null=True, blank=True)
     date_left = models.DateField('Date Left', null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} ({})".format(
+            self.student.first_name,
+            self.student.last_name,
+            self.student.osis_number
+        )
 
 
 class Plan(models.Model):
