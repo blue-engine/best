@@ -4,6 +4,7 @@ import logging
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from daterange_filter.filter import DateRangeFilter
 from django.http import HttpResponse
 
 from .models import *
@@ -74,7 +75,10 @@ class ReportStudentInline(admin.StackedInline):
 class ReportAdmin(admin.ModelAdmin):
     inlines = [ReportStudentInline]
     list_display = ('group', 'date', 'week', 'exported')
-    exporter_list_filter = ('exported', 'date')
+    exporter_list_filter = (
+        'exported',
+        ('date', DateRangeFilter)
+    )
     actions = ['export_report_action']
     
     class Media:
