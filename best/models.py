@@ -118,7 +118,14 @@ class Plan(models.Model):
     course = models.ForeignKey(Course)
     instructor = models.ForeignKey(Instructor)
     description = models.CharField(max_length=256)
-    learning_target = models.ForeignKey(LearningTarget)
+    learning_target = models.ForeignKey(LearningTarget, null=True, blank=True)
+    alt_learning_target = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        verbose_name='Alt Learning Target',
+        help_text='Only use when not selecting a pre-defined learning target'
+    )
     dosage = models.IntegerField()
     exit_ticket_denominator = models.IntegerField()
     homework_denominator = models.IntegerField()

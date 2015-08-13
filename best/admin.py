@@ -134,7 +134,7 @@ class ReportAdmin(admin.ModelAdmin):
                     report.plan.dosage,
                     report_student.exit_ticket,
                     report.plan.exit_ticket_denominator,
-                    report.plan.learning_target.code,
+                    report.plan.learning_target.code if report.plan.learning_target else report.plan.alt_learning_target,
                     report_student.get_homework_effort_display(),
                     report_student.homework_accuracy,
                     report.plan.homework_denominator,
