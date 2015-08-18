@@ -24,5 +24,9 @@ urlpatterns = [
     url(r'^', include('best.urls')),
 ]
 
+
+"""
+Override admin default header and title without overwriting template files
+"""
 admin.site.site_header = "BEST"
 admin.site.site_title = "BEST"

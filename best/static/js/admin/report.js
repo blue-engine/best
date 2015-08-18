@@ -9,6 +9,8 @@
                 && (!old_group_id || confirm('Changing Groups, Will remove all form data'))) {
 
                 $student_selects = $('#reportstudent_set-group .field-student select')
+
+                // Clear all pre-selected data
                 $student_selects.val(null)
                 $student_selects.html('<option value="">---------</option>')
                 $('#reportstudent_set-group .field-attendance select').val(null)
@@ -18,6 +20,7 @@
                 $('#reportstudent_set-group .field-quiz input').val(null)
                 $('#reportstudent_set-group .inline-deletelink').click()
 
+                // Populate dropdowns with groups specific data. Prefill students
                 $.getJSON("/api/groups/"+group_id, function( data ) {
                     current_plan_id = $plans.val()
                     $plans.html('<option value="">---------</option>')

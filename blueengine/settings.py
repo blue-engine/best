@@ -76,9 +76,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'blueengine.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-print "sqlite://{}".format(os.path.join(BASE_DIR, 'db.sqlite3'))
+"""
+" Database
+" https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+" Uses database specified in DATABASE_URL environmental variable, otherwise defaults
+" to sqllite
+"""
 DATABASES = {
     'default': dj_database_url.config(
         default="sqlite:///{}".format(os.path.join(BASE_DIR, 'db.sqlite3'))

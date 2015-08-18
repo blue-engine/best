@@ -12,6 +12,9 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
 
+"""
+Return all plans and students for a particular group
+"""
 def group_detail(request, pk):
     if request.method != 'GET':
         return HttpResponse(status=404)

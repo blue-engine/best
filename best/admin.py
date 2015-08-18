@@ -19,6 +19,9 @@ class InstructorInline(admin.StackedInline):
     can_delete=False
     verbose_name_plural = 'Instructor'
 
+class UserAdmin(UserAdmin):
+    inlines = (InstructorInline, )
+
 class StudentAdmin(admin.ModelAdmin):
     list_display =  ('osis_number', 'first_name', 'last_name', 'email', 'school')
 
@@ -36,12 +39,18 @@ class GroupAdmin(admin.ModelAdmin):
     inlines = [GroupStudentInline]
     list_display = ('code', 'section', 'instructor')
 
+    """
+    BETAs should only be able to see their own groups
+    """
     def get_queryset(self, request):
         qs = super(GroupAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
         return qs.filter(instructor__user=request.user)
         
+    """
+    BETAs should only be able to create groups with themselves as the instructor
+    """
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:
             if db_field.name == 'instructor':
@@ -51,6 +60,10 @@ class GroupAdmin(admin.ModelAdmin):
 class PlanAdmin(admin.ModelAdmin):
     list_display = ('course', 'instructor', 'description')
     
+
+    """
+    BETAs should only see their own plans
+    """
     def get_queryset(self, request):
         qs = super(PlanAdmin, self).get_queryset(request)
         if request.user.is_superuser:
@@ -61,6 +74,9 @@ class ReportStudentInline(admin.StackedInline):
     model = ReportStudent
     extra = 1
 
+    """
+    BETAs should only be able to add their students to a report
+    """
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'student' and not request.user.is_superuser:
             instructor_groups = request.user.instructor_set.first().group_set.all()
@@ -71,6 +87,9 @@ class ReportStudentInline(admin.StackedInline):
             kwargs["queryset"] = Student.objects.filter(pk__in=student_ids)
         return super(ReportStudentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+"""
+Filter reports based on course
+"""
 class ReportCourseFilter(admin.SimpleListFilter):
     title = 'Course'
     parameter_name = 'course'
@@ -94,9 +113,13 @@ class ReportAdmin(admin.ModelAdmin):
     )
     actions = ['export_report_action']
     
+    #Include additional JS into model admin
     class Media:
       js = ("js/admin/report.js",)
 
+    """
+    Only show export action if user has permission
+    """
     def get_actions(self, request):
         actions = super(ReportAdmin, self).get_actions(request)
         if not request.user.has_perm('best.export_report'):
@@ -104,12 +127,18 @@ class ReportAdmin(admin.ModelAdmin):
                 del actions['export_report_action']
         return actions
 
+    """
+    Show filters only for superuser and exporters
+    """
     def get_list_filter(self, request):
         if request.user.has_perm('best.export_report'):
             return self.exporter_list_filter
         else:
             return ()
 
+    """
+    Export report to a CSV, and mark report as exported
+    """
     def export_report_action(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=reports.csv'
@@ -148,12 +177,20 @@ class ReportAdmin(admin.ModelAdmin):
         return response
     export_report_action.short_description = 'Export selected reports for Apricot'
 
+    """
+    BETAs can only create reports for their own Groups
+    """
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:
             if db_field.name == 'group':
                 kwargs["queryset"] = Group.objects.filter(instructor__user=request.user)
         return super(ReportAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+    """
+    Superusers can view all reports
+    Exporters can view reports from their school
+    BETAs can view only their reports
+    """
     def get_queryset(self, request):
         qs = super(ReportAdmin, self).get_queryset(request)
         if request.user.is_superuser:
@@ -163,9 +200,6 @@ class ReportAdmin(admin.ModelAdmin):
             return qs.filter(group__section__school=request.user.instructor.school)
 
         return qs.filter(group__instructor__user=request.user)
-
-class UserAdmin(UserAdmin):
-    inlines = (InstructorInline, )
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
