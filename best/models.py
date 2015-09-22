@@ -43,7 +43,7 @@ class Student(models.Model):
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     osis_number = models.CharField(max_length=128)
-    email = models.CharField(max_length=128)
+    email = models.CharField(max_length=128, null=True, blank=True)
     school = models.ForeignKey(School)
 
     def __str__(self):
