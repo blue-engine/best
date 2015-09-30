@@ -159,10 +159,11 @@ class ReportStudent(models.Model):
     report = models.ForeignKey(Report)
     student = models.ForeignKey(Student)
     attendance = models.IntegerField(choices=ATTENDANCE_CHOICES)
+    minutes_late = models.IntegerField(null=True, blank=True)
     exit_ticket = models.IntegerField(null=True, blank=True)
     homework_effort = models.IntegerField(choices=HOMEWORK_CHOICES)
-    homework_accuracy = models.DecimalField(max_digits=3, decimal_places=1)
-    quiz = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
+    homework_accuracy = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
+    notes = models.CharField(max_length=512, null=True, blank=True)
 
     def __str__(self):
         return "{}, {}".format(
