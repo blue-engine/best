@@ -66,10 +66,10 @@ class ReportStudentInline(admin.StackedInline):
     """
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'student' and not request.user.is_superuser:
-            instructor_groups = request.user.instructor_set.first().group_set.all()
+            instructor_groups = request.user.instructor.group_set.all()
             student_ids = set()
             for group in instructor_groups:
-                for student in group.groupstudent_set.all():
+                for student in group.group_students.all():
                     student_ids.add(student.id)
             kwargs["queryset"] = Student.objects.filter(pk__in=student_ids)
         return super(ReportStudentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
