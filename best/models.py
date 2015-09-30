@@ -118,7 +118,7 @@ class Report(models.Model):
     group = models.ForeignKey(Group)
     date = models.DateField()
     week = models.IntegerField()
-    learning_target = models.ForeignKey(LearningTarget, null=True, blank=True)
+    learning_target = models.ForeignKey(LearningTarget, null=True)
     exported = models.BooleanField()
 
     class Meta:

@@ -134,7 +134,7 @@ class ReportAdmin(admin.ModelAdmin):
         writer.writerow([
             'OSIS #', 'Course', 'Fiscal/Schol Year', 'Date', 'Quarter', 'Week', 'Attendance', 'Dosage', 'Exit Ticket',
             'Exit Ticket (Denominator)', 'Learning Target Notes', 'HW Effort', 'HW Accuracy',
-            'HW (Denominator)', 'Weekly Quiz', 'Weekly Quiz', 'Instructor'
+            'HW (Denominator)', 'Instructor'
         ])
         for report in queryset:
             for report_student in report.reportstudent_set.all():
@@ -147,15 +147,13 @@ class ReportAdmin(admin.ModelAdmin):
                     report.group.section.semester_code,
                     report.week,
                     report_student.get_attendance_display(),
-                    report.plan.dosage,
+                    report.group.section.section_length - report_student.minutes_late if report_student.minutes_late else report.group.section.section_length,
                     report_student.exit_ticket,
-                    report.plan.exit_ticket_denominator,
-                    report.plan.learning_target.code if report.plan.learning_target else report.plan.alt_learning_target,
+                    100 if report_student.exit_ticket else None,
+                    report.learning_target.code,
                     report_student.get_homework_effort_display(),
                     report_student.homework_accuracy,
-                    report.plan.homework_denominator,
-                    'Yes' if report_student.quiz and str(report_student.quiz) else 'No',
-                    report_student.quiz,
+                    100 if report_student.homework_accuracy else None,
                     "{} {}".format(report.group.instructor.user.first_name, report.group.instructor.user.last_name),
                 ])
 
