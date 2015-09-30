@@ -57,19 +57,6 @@ class GroupAdmin(admin.ModelAdmin):
                 kwargs["queryset"] = Instructor.objects.filter(user=request.user)
         return super(GroupAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-class PlanAdmin(admin.ModelAdmin):
-    list_display = ('course', 'instructor', 'description')
-    
-
-    """
-    BETAs should only see their own plans
-    """
-    def get_queryset(self, request):
-        qs = super(PlanAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(instructor__user=request.user)
-
 class ReportStudentInline(admin.StackedInline):
     model = ReportStudent
     extra = 1
@@ -210,5 +197,4 @@ admin.site.register(Section, SectionAdmin)
 admin.site.register(Standard)
 admin.site.register(LearningTarget, LearningTargetAdmin)
 admin.site.register(Group, GroupAdmin)
-admin.site.register(Plan, PlanAdmin)
 admin.site.register(Report, ReportAdmin)

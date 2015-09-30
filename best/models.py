@@ -64,6 +64,7 @@ class Section(models.Model):
     description = models.CharField(max_length=256)
     year_code = models.CharField(max_length=32)
     semester_code = models.CharField(max_length=32)
+    section_length = models.IntegerField('Section Length (minutes)', default=30)
 
     def __str__(self):
         return "{} - {}".format(self.code, self.description)
@@ -113,31 +114,11 @@ class GroupStudent(models.Model):
             self.student.osis_number
         )
 
-
-class Plan(models.Model):
-    course = models.ForeignKey(Course)
-    instructor = models.ForeignKey(Instructor)
-    description = models.CharField(max_length=256)
-    learning_target = models.ForeignKey(LearningTarget, null=True, blank=True)
-    alt_learning_target = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
-        verbose_name='Alt Learning Target',
-        help_text='Only use when not selecting a pre-defined learning target'
-    )
-    dosage = models.IntegerField()
-    exit_ticket_denominator = models.IntegerField()
-    homework_denominator = models.IntegerField()
-
-    def __str__(self):
-        return self.description
-
 class Report(models.Model):
     group = models.ForeignKey(Group)
     date = models.DateField()
     week = models.IntegerField()
-    plan = models.ForeignKey(Plan, null=True)
+    learning_target = models.ForeignKey(LearningTarget, null=True, blank=True)
     exported = models.BooleanField()
 
     class Meta:

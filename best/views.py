@@ -13,7 +13,7 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 """
-Return all plans and students for a particular group
+Return all students for a particular group
 """
 def group_detail(request, pk):
     if request.method != 'GET':
@@ -27,10 +27,5 @@ def group_detail(request, pk):
     group_serializer = GroupSerializer(group)
     data = group_serializer.data
 
-    course_id = group.section.course.id
-    instructor_id = group.section.instructor.id
-    plans = Plan.objects.filter(course_id=course_id).filter(instructor_id=instructor_id)
-    plans_serializer = PlanSerializer(plans, many=True)
-    data['plans'] = plans_serializer.data
     return JSONResponse(data)
 

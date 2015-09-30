@@ -20,8 +20,3 @@ class GroupSerializer(serializers.ModelSerializer):
     model = Group
     fields = ('id', 'code', 'group_students')  
 
-class PlanSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Plan
-    fields = ('id', 'description')
-
