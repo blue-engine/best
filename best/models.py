@@ -121,10 +121,15 @@ class Report(models.Model):
     learning_target = models.ForeignKey(LearningTarget, null=True)
     exported = models.BooleanField()
 
+    def __str__(self):
+        return "{} - {}".format(self.group, self.date)
+
     class Meta:
         permissions = (
             ('export_report', 'Export Report for Apricot'),
         )
+        verbose_name = 'Record'
+        verbose_name_plural = 'Records'
 
 class ReportStudent(models.Model):
     ATTENDANCE_CHOICES = (
