@@ -69,8 +69,8 @@ class ReportStudentInline(admin.StackedInline):
             instructor_groups = request.user.instructor.group_set.all()
             student_ids = set()
             for group in instructor_groups:
-                for student in group.group_students.all():
-                    student_ids.add(student.id)
+                for group_student in group.group_students.all():
+                    student_ids.add(group_student.student.id)
             kwargs["queryset"] = Student.objects.filter(pk__in=student_ids)
         return super(ReportStudentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
