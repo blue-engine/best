@@ -35,6 +35,14 @@ class GroupStudentInline(admin.StackedInline):
     model = GroupStudent
     extra = 1
 
+    """
+    BETAs should only be able to add students from their school to their groups
+    """
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'student' and not request.user.is_superuser:
+            kwargs["queryset"] = Student.objects.filter(school_id=request.user.instructor.school_id).order_by('first_name', 'last_name')
+        return super(GroupStudentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 class GroupAdmin(admin.ModelAdmin):
     inlines = [GroupStudentInline]
     list_display = ('code', 'section', 'instructor')
@@ -71,7 +79,7 @@ class ReportStudentInline(admin.StackedInline):
             for group in instructor_groups:
                 for group_student in group.group_students.all():
                     student_ids.add(group_student.student.id)
-            kwargs["queryset"] = Student.objects.filter(pk__in=student_ids)
+            kwargs["queryset"] = Student.objects.filter(pk__in=student_ids).order_by('first_name', 'last_name')
         return super(ReportStudentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 """
